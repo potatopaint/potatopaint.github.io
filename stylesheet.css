@@ -1,0 +1,48 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Calibri", sans-serif;
+    overflow: hidden;
+}
+
+.toolwindow {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 250px;
+    padding: 8px;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3), 0 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+p {
+    vertical-align: top;
+}
+
+canvas {
+    image-rendering: pixelated;
+    image-rendering: -webkit-optimize-contrast;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAA9SURBVDhPY/wPBAxEgAcPHkBZ+AETlKYaGDWQcjBqIOWA8f79+0TlFAUFBSgLPxiNFMrBqIGUAyobyMAAAGJACr9LvgRrAAAAAElFTkSuQmCC);
+    user-drag: none;
+}
+
+.preview-caption {
+    position: absolute;
+    font-size: 10px;
+    top: 2px;
+    left: 2px;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 1px 3px;
+}
+
+.cursor-positions {
+    font-size: .7em;
+}
+
+#mouse {
+    float: right;
+}
