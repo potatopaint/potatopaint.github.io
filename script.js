@@ -14,7 +14,7 @@ const tools = {
   arrowthin: { label: "Arrow (thin)", type: "directional", svgGenerate: generateArrowThinSvgPath },
   arrowthick: { label: "Arrow (thick)", type: "directional", svgGenerate: generateArrowThickSvgPath },
   doublearrowthick: { label: "Doublesided Arrow (thick)", type: "directional", svgGenerate: generateDoubleArrowThickSvgPath },
-  star: { label: "Star", type: "shape", svgGenerate: generateStarSvgPath },
+  windrose: { label: "Windrose", type: "shape", svgGenerate: generateWindroseSvgPath },
   band: { label: "Band", type: "shape", svgGenerate: generateBandaroleSvgPath },
   diamond: { label: "Diamond", type: "shape", svgGenerate: generateDiamondSvgPath },
   cross: { label: "Cross", type: "shape", svgGenerate: generateCrossSvgPath },
@@ -231,7 +231,7 @@ function generateGridSvgPath(startX, startY, endX, endY) {
   return joinVectorsToSvgPath(transformedVectors);
 };
 
-function generateStarSvgPath(startX, startY, endX, endY) {
+function generateWindroseSvgPath(startX, startY, endX, endY) {
   // M50,0 l10,30 l18,-8 l-8,18 l30,10 l-30,10 l8,18 l-18,-8 l-10,30 l-10,-30 l-18,8 l8,-18 l-30,-10 l30,-10 l-8,-18 l18,8 z
   var hScale = (endX-startX)/100;
   var vScale = (endY-startY)/100;
@@ -394,7 +394,7 @@ function drawPreview() {
   
   var item = false;
   switch(getCurrentTool()) {
-    case "star":
+    case "windrose":
     case "diamond":
     case "cross":
       item = generateItem(90, 5, 160, 65);
