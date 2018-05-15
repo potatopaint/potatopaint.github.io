@@ -20,6 +20,7 @@ const tools = {
   star: { label: "Star", type: "directional", svgGenerate: generateStarSvgPath },
   cross: { label: "Cross", type: "shape", svgGenerate: generateCrossSvgPath },
   grid: { label: "Grid/Table", type:"shape", svgGenerate: generateGridSvgPath },
+  polygon: { label: "Polygon", type:"directional", svgGenerate: generatePolygonSvgPath },
   heart: { label: "Heart", type:"shape", svgGenerate: generateHeartSvgPath },
 };
 
@@ -226,6 +227,39 @@ function generateStarVectors(cx, cy, dt) {
   }
 
   return vectors;
+}
+
+function generatePolygonVectors(cx, cy, dt) {
+  const tips = 3;
+  const angleDiff = (Math.PI*2)/tips;
+  var vectors = [];
+  
+  for (var i = 0; i < tips + 1; i++) {
+    var curPoint = calculateStarPoint(cx, cy, dt, dt, angleDiff, i);
+    var prevPoint = calculateStarPoint(cx, cy, dt, dt, angleDiff, i-1);
+    if (i === 0) {
+      vectors.push({type:"M", x:cx, y:cy});
+      vectors.push({type:"m", x:curPoint.x-cx, y:curPoint.y-cy});
+    } else {
+      vectors.push({x:curPoint.x-prevPoint.x, y:curPoint.y-prevPoint.y});
+    }
+  }
+
+  return vectors;
+}
+
+function generatePolygonSvgPath(startX, startY, endX, endY) {
+  var vector = { x:endX - startX, y:endY - startY };
+  var acos = Math.acos(vector.x / Math.hypot(vector.x, vector.y));
+  var asin = Math.asin(vector.y / Math.hypot(vector.x, vector.y));
+  var rotateAngle = asin == 0 ? acos : acos * Math.sign(asin);
+  var length = Math.hypot(vector.x, vector.y);
+  var dt = length * 2;
+
+  var vectors = generatePolygonVectors(startX, startY, dt);
+  var transformedVectors = rotateMultipleVectors(vectors, rotateAngle);
+
+  return joinVectorsToSvgPath(transformedVectors);
 }
 
 function generateStarSvgPath(startX, startY, endX, endY) {
@@ -484,6 +518,7 @@ function drawPreview() {
       item = generateItem(30, 10, 200, 60);
       break;
     case "star":
+    case "polygon":
       item = generateItem(120, 35, 120, 5);
       break;
     default:
