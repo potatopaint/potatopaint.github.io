@@ -23,6 +23,7 @@ const tools = {
   polygon: { label: "Polygon", type:"directional", svgGenerate: generatePolygonSvgPath },
   heart: { label: "Heart", type:"shape", svgGenerate: generateHeartSvgPath },
   cloud: { label: "Cloud", type:"shape", svgGenerate: generateCloudSvgPath },
+  cloverleaf: { label: "Cloverleaf", type:"shape", svgGenerate: generateCloverleafSvgPath },
 };
 
 function generateToolRadioNodes() {
@@ -370,6 +371,23 @@ function generateCloudSvgPath(startX, startY, endX, endY) {
   return joinVectorsToSvgPath(transformedVectors);
 }
 
+function generateCloverleafSvgPath(startX, startY, endX, endY) {
+  // M50,20 a 25,25 0,1,1 30,30 a 25,25 0,1,1 -30,30 a 25,25 0,1,1 -30,-30 a 25,25 0,1,1 30,-30
+  var hscale = (endX-startX)/100;
+  var vscale = (endY-startY)/100;
+  
+  var vectors = [
+    {type:"M",x:startX+hscale*50,y:startY+vscale*20},
+    {type:"a",values:[{x:25,y:25},{raw:"0,1,1"},{x:30,y:30}]},
+    {type:"a",values:[{x:25,y:25},{raw:"0,1,1"},{x:-30,y:30}]},
+    {type:"a",values:[{x:25,y:25},{raw:"0,1,1"},{x:-30,y:-30}]},
+    {type:"a",values:[{x:25,y:25},{raw:"0,1,1"},{x:30,y:-30}]},
+  ];
+  
+  var transformedVectors = scaleMultipleVectors(vectors, hscale, vscale);
+  return joinVectorsToSvgPath(transformedVectors);
+}
+
 function rotateMultipleVectors(vectors, angle) {
   return vectors.map(v => {
     if (v.type && v.type === v.type.toUpperCase())
@@ -532,6 +550,7 @@ function drawPreview() {
     case "cross":
     case "heart":
     case "cloud":
+    case "cloverleaf":
       item = generateItem(90, 5, 160, 65);
       break;
     case "band":
