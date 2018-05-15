@@ -513,6 +513,10 @@ canvas.onmousemove = function(evt) {
   }
 };
 
+canvas.onmouseleave = function(evt) {
+  document.getElementById("mouse").innerText = "- | -";
+};
+
 canvas.onmouseup = function(evt) {
   var item = lastGeneratedItem;
   dragStart = null;
