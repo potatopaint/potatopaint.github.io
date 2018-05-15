@@ -19,7 +19,8 @@ const tools = {
   diamond: { label: "Diamond", type: "shape", svgGenerate: generateDiamondSvgPath },
   star: { label: "Star", type: "directional", svgGenerate: generateStarSvgPath },
   cross: { label: "Cross", type: "shape", svgGenerate: generateCrossSvgPath },
-  grid: { label: "Grid/Table", type:"shape", svgGenerate: generateGridSvgPath }
+  grid: { label: "Grid/Table", type:"shape", svgGenerate: generateGridSvgPath },
+  heart: { label: "Heart", type:"shape", svgGenerate: generateHeartSvgPath },
 };
 
 function generateToolRadioNodes() {
@@ -299,6 +300,23 @@ function generateDiamondSvgPath(startX, startY, endX, endY) {
   return joinVectorsToSvgPath(transformedVectors);
 }
 
+function generateHeartSvgPath(startX, startY, endX, endY) {
+  // M150,130 a 20,20 0,1,1 30,20 a 85,85 0,0,0 -30,40 a 85,85 0,0,0 -30,-40 a 20,20, 0,1,1 30,-20
+  var hscale = (endX-startX)/80;
+  var vscale = (endY-startY)/80;
+
+  var vectors = [
+    {type:"M",x:startX+hscale*40,y:startY+vscale*20},
+    {type:"a",values:[{x:20,y:20},{raw:"0,1,1"},{x:30,y:20}]},
+    {type:"a",values:[{x:85,y:85},{raw:"0,0,0"},{x:-30,y:40}]},
+    {type:"a",values:[{x:85,y:85},{raw:"0,0,0"},{x:-30,y:-40}]},
+    {type:"a",values:[{x:20,y:20},{raw:"0,1,1"},{x:30,y:-20}]}
+  ];
+
+  var transformedVectors = scaleMultipleVectors(vectors, hscale, vscale);
+  return joinVectorsToSvgPath(transformedVectors);
+}
+
 function rotateMultipleVectors(vectors, angle) {
   return vectors.map(v => {
     if (v.type && v.type === v.type.toUpperCase())
@@ -315,6 +333,16 @@ function scaleMultipleVectors(vectors, hScale, vScale) {
   return vectors.map(v => {
     if (v.type && v.type === v.type.toUpperCase())
       return v;
+    if (v.raw)
+      return v;
+    
+    if (v.type === "a") {
+      return {
+        ...v,
+        values: scaleMultipleVectors(v.values, hScale, vScale)
+      };
+    }
+    
     return {
       ...v,
       x: v.x * hScale,
@@ -324,7 +352,16 @@ function scaleMultipleVectors(vectors, hScale, vScale) {
 }
 
 function joinVectorsToSvgPath(vectors) {
-  var path = vectors.map(v => (v.type ? v.type : "l") + v.x + "," + v.y).join(" ");
+  var path = vectors.map(v => {
+    
+    if (v.type === "a") {
+      return "a" + v.values.map(vec => {
+        return vec.raw ? vec.raw : vec.x + ","+vec.y
+      }).join(" ");
+    }
+    
+    return (v.type ? v.type : "l") + v.x + "," + v.y;
+  }).join(" ");
   return path;
 }
 
@@ -440,6 +477,7 @@ function drawPreview() {
     case "windrose":
     case "diamond":
     case "cross":
+    case "heart":
       item = generateItem(90, 5, 160, 65);
       break;
     case "band":
