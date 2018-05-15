@@ -22,6 +22,7 @@ const tools = {
   grid: { label: "Grid/Table", type:"shape", svgGenerate: generateGridSvgPath },
   polygon: { label: "Polygon", type:"directional", svgGenerate: generatePolygonSvgPath },
   heart: { label: "Heart", type:"shape", svgGenerate: generateHeartSvgPath },
+  cloud: { label: "Cloud", type:"shape", svgGenerate: generateCloudSvgPath },
 };
 
 function generateToolRadioNodes() {
@@ -351,6 +352,24 @@ function generateHeartSvgPath(startX, startY, endX, endY) {
   return joinVectorsToSvgPath(transformedVectors);
 }
 
+function generateCloudSvgPath(startX, startY, endX, endY) {
+  // M 16,25 a 16,16 1 0,0 0,32 h 50 a 16,16 1 0,0 0,-32 a 10,10 1 0,0 -15,-10 a 15,15 1 0,0 -35,10
+  var hscale = (endX-startX)/82; // TODO is this right?
+  var vscale = (endY-startY)/56; // TODO is this right?
+  
+  var vectors = [
+    {type:"M",x:startX+hscale*16,y:startY+vscale*25},
+    {type:"a",values:[{x:16,y:16},{raw:"1,0,0"},{x:0,y:32}]},
+    {x:50,y:0},
+    {type:"a",values:[{x:16,y:16},{raw:"1,0,0"},{x:0,y:-32}]},
+    {type:"a",values:[{x:10,y:10},{raw:"1,0,0"},{x:-15,y:-10}]},
+    {type:"a",values:[{x:15,y:15},{raw:"1,0,0"},{x:-35,y:10}]},
+  ];
+  
+  var transformedVectors = scaleMultipleVectors(vectors, hscale, vscale);
+  return joinVectorsToSvgPath(transformedVectors);
+}
+
 function rotateMultipleVectors(vectors, angle) {
   return vectors.map(v => {
     if (v.type && v.type === v.type.toUpperCase())
@@ -512,6 +531,7 @@ function drawPreview() {
     case "diamond":
     case "cross":
     case "heart":
+    case "cloud":
       item = generateItem(90, 5, 160, 65);
       break;
     case "band":
