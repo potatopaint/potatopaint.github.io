@@ -571,27 +571,27 @@ function drawPreview() {
 document.querySelectorAll(".setting").forEach(e => e.addEventListener("change", drawPreview));
 drawPreview();
 
-canvas.onmousedown = function(evt) {
+canvas.addEventListener("mousedown", evt => {
   dragStart = {
     x: evt.offsetX,
     y: evt.offsetY
   }
-};
+});
 
-canvas.onmousemove = function(evt) {
+canvas.addEventListener("mousemove", evt => {
   document.getElementById("mouse").innerText = evt.offsetX + " | " + evt.offsetY;
   if (dragStart) {
     drawAll(evt);
     // TODO this currently does not take into account when user presses shift!!!
     document.getElementById("draw").innerText = (evt.offsetX-dragStart.x) + " | " + (evt.offsetY-dragStart.y);
   }
-};
+});
 
-canvas.onmouseleave = function(evt) {
+canvas.addEventListener("mouseleave", evt => {
   document.getElementById("mouse").innerText = "- | -";
-};
+});
 
-canvas.onmouseup = function(evt) {
+canvas.addEventListener("mouseup", evt => {
   var item = lastGeneratedItem;
   dragStart = null;
   document.getElementById("draw").innerText = "- | -";
@@ -600,4 +600,19 @@ canvas.onmouseup = function(evt) {
     lastGeneratedItem = false;
     drawAll();
   }
-};
+});
+
+// convert touch events to mouse events
+function convertTouchToMouseEvent(mouseEventName, touchEventArgs) {
+  var touch = touchEventArgs.touches[0];
+  var mouseEventArgs = touch !== undefined ? {
+    clientX: touch.clientX,
+    clientY: touch.clientY
+  } : {}; // touch is undefined on "touchend"
+  var mouseEvent = new MouseEvent(mouseEventName, mouseEventArgs);
+  canvas.dispatchEvent(mouseEvent);
+}
+canvas.addEventListener("touchstart", e => convertTouchToMouseEvent("mousedown", e), false);
+canvas.addEventListener("touchend", e => convertTouchToMouseEvent("mouseup", e), false);
+canvas.addEventListener("touchend", e => convertTouchToMouseEvent("mouseleave", e), false);
+canvas.addEventListener("touchmove", e => convertTouchToMouseEvent("mousemove", e), false);
