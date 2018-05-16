@@ -46,3 +46,41 @@ canvas {
 #mouse {
     float: right;
 }
+
+#toolbar {
+    /*padding: 2px;*/
+    /*background-color: white;/*rgba(0,0,0,0.1);*/
+    /*box-shadow: 0 0 5px lightgray, 0 4px 5px lightgray;*/
+    position: relative;
+    /*border-radius: 2px;*/
+}
+
+label.tool-button {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    margin: 2px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    /*box-shadow: inset 0 0 0 2px rgba(0,0,0,0.2); /* todo move this and box shadow from label to unchecked canvas? */
+}
+  
+label.tool-button > input[type=radio] {
+    visibility: hidden;
+    position: absolute;
+    left: -100px;
+}
+  
+label.tool-button > input:checked ~ canvas {
+    background-color: lightgray;
+    box-shadow: inset 0 0 0px 1px rgba(0,0,0,0.2); /* todo move this and box shadow from label to unchecked canvas? */
+}
+  
+label.tool-button > canvas {
+    background: none;
+    transition: background-color .2s ease-out,
+                box-shadow .2s ease-out;
+    /*transform: scale(0.8);*/
+    width: 100%;
+    height: 100%;
+}

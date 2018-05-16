@@ -26,27 +26,51 @@ const tools = {
   cloverleaf: { label: "Cloverleaf", type:"shape", svgGenerate: generateCloverleafSvgPath },
 };
 
-function generateToolRadioNodes() {
+const size = 128;
+const margin = 24;
+function generateToolButton(id, tool, drawFunct) {
+  var label = document.createElement("label");
+  label.classList.add("tool-button");
+  label.title = tool.label;
+  var radioInput = document.createElement("input");
+  radioInput.type = "radio";
+  radioInput.name = "tool";
+  radioInput.checked = id === "line"; // preselect line
+  radioInput.id = id;
+  radioInput.classList.add("setting");
+  var cvs = document.createElement("canvas");
+  cvs.width = size;
+  cvs.height = size;
+  label.appendChild(radioInput);
+  label.appendChild(cvs);
+  
+  var cctx = cvs.getContext("2d");
+  var r = rough.canvas(cvs, {options: { roughness: 0 }});
+  
+  // use tool to draw thing
+  if (drawFunct)
+    drawFunct(r);
+  else
+    cctx.fillText("undef", 2.5, 18);
+  
+  return label;
+}
+
+function generateToolSelection() {
   var nodes = [];
   for (var toolKey in tools) {
     var tool = tools[toolKey];
-    var node = document.createElement("label");
-    var input = document.createElement("input");
-    var t = document.createTextNode(" " + tool.label);
-    input.type = "radio";
-    input.name = "tool";
-    input.id = toolKey;
-    input.classList.add("setting");
-    node.appendChild(input);
-    node.appendChild(t);
+    var drawItem = generateItem(margin, margin, size-margin, size-margin, false, toolKey);
+    drawItem.options.roughness = 0;
+    drawItem.options.strokeWidth = 4;
+    // TODO move draw-logic to button-generation
+    var node = generateToolButton(toolKey, tool, r => r.draw(drawItem));
     
     nodes.push(node);
-    nodes.push(document.createElement("br"))
   }
-  nodes.forEach(n => document.getElementById("toolselection").appendChild(n));
-  nodes[0].children[0].checked = true; // preselect line
+  nodes.forEach(n => document.getElementById("toolbar").appendChild(n));
 }
-generateToolRadioNodes();
+generateToolSelection();
 
 function fitCanvasToWindow() {
   canvas.width = window.innerWidth;
@@ -457,10 +481,10 @@ function createCurrentOptionsObject() {
   return options;
 }
 
-function generateItem(startX, startY, endX, endY, forceAngular) {
-  var toolKey = getCurrentTool();
+function generateItem(startX, startY, endX, endY, forceAngular, toolId) {
+  var toolKey = toolId ? toolId : getCurrentTool();
   var tool = tools[toolKey];
-  var options = createCurrentOptionsObject();
+  var options = toolId ? {} : createCurrentOptionsObject(); // TODO this is very suboptimal, refactor the whole render/toolbar-render logic!
   var w = endX-startX;
   var h = endY-startY;
   
